@@ -1,6 +1,7 @@
 #define PURPLE_PLUGINS
 
 #include <glib.h>
+#include <string.h>
 
 #ifndef G_GNUC_NULL_TERMINATED
 #  if __GNUC__ >= 4
@@ -26,7 +27,7 @@ static gboolean unload(PurplePlugin *plugin);
 const gchar *list_icon(PurpleAccount *account, PurpleBuddy *buddy);
 void login(PurpleAccount *account);
 void close(PurpleConnection *pc);
-int chat_send(PurpleConnection *pc, int id, const char *message, PurpleMessageFlags flags)
+int chat_send(PurpleConnection *pc, int id, const char *message, PurpleMessageFlags flags);
 
 static PurplePluginProtocolInfo proto_info = {
 	(PurpleProtocolOptions) (OPT_PROTO_CHAT_TOPIC),// options
@@ -133,7 +134,7 @@ static PurplePluginInfo info = {
 };
 
 static gboolean load(PurplePlugin *plugin) {
-	purple_debug_info("carrier-twilio", "Loaded successfully\n");
+	purple_debug_info("carrier", "Loaded successfully\n");
   return TRUE;
 }
 
@@ -142,8 +143,23 @@ static gboolean unload(PurplePlugin *plugin) {
 }
 
 static void init_plugin(PurplePlugin *plugin) {
-  PurpleAccountOption *option = purple_account_option_string_new("DID", "did", "");
-  proto_info.protocol_options = g_list_append(proto_info.protocol_options, option);
+  PurpleAccountOption *did_option = purple_account_option_string_new("DID", "did", "");
+  proto_info.protocol_options = g_list_append(proto_info.protocol_options, did_option);
+	purple_debug_info("carrier", "Added DID option\n");
+
+	PurpleKeyValuePair *voip = malloc(sizeof(PurpleKeyValuePair));
+	PurpleKeyValuePair *twilio = malloc(sizeof(PurpleKeyValuePair));
+	voip->key = "VOIP.ms";
+	voip->value = "voip";
+	twilio->key = "Twilio";
+	twilio->value = "twilio";
+
+	GList *server_list = NULL;
+	server_list = g_list_append(server_list, twilio);
+	server_list = g_list_append(server_list, voip);
+	PurpleAccountOption *server_option = purple_account_option_list_new("Server", "server", server_list);
+  proto_info.protocol_options = g_list_append(proto_info.protocol_options, server_option);
+	purple_debug_info("carrier", "Added server option\n");
 }
 
 const gchar *list_icon(PurpleAccount *account, PurpleBuddy *buddy) {
@@ -151,7 +167,7 @@ const gchar *list_icon(PurpleAccount *account, PurpleBuddy *buddy) {
 }
 
 void login(PurpleAccount *account) {
-
+	
 }
 
 void close(PurpleConnection *pc) {
