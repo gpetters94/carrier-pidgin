@@ -24,10 +24,13 @@
 
 static gboolean load(PurplePlugin *plugin);
 static gboolean unload(PurplePlugin *plugin);
+
 const gchar *list_icon(PurpleAccount *account, PurpleBuddy *buddy);
 void login(PurpleAccount *account);
 void close(PurpleConnection *pc);
 int chat_send(PurpleConnection *pc, int id, const char *message, PurpleMessageFlags flags);
+void add_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group);
+void remove_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group);
 
 static PurplePluginProtocolInfo proto_info = {
 	(PurpleProtocolOptions) (OPT_PROTO_CHAT_TOPIC),// options
@@ -51,9 +54,9 @@ static PurplePluginProtocolInfo proto_info = {
 	NULL, //steamworks_set_status,    // set_status
 	NULL,                     // set_idle
 	NULL,                     // change_passwd
-	NULL, //steamworks_add_buddy,     // add_buddy
+	add_buddy,								// add_buddy
 	NULL,                     // add_buddies
-	NULL, //steamworks_remove_buddy,  // remove_buddy
+	remove_buddy,							// remove_buddy
 	NULL,                     // remove_buddies
 	NULL,                     // add_permit
 	NULL, //steamworks_ignore_buddy,  // add_deny
@@ -64,7 +67,7 @@ static PurplePluginProtocolInfo proto_info = {
 	NULL, //steamworks_reject_chat,   // reject_chat
 	NULL, //steamworks_get_chat_name, // get_chat_name
 	NULL, //steamworks_chat_invite,   // chat_invite
-	NULL, //steamworks_chat_leave,    // chat_leave
+	NULL, 										// chat_leave
 	NULL,                     // chat_whisper
 	chat_send, // chat_send
 	NULL,                     // keepalive
@@ -167,11 +170,19 @@ const gchar *list_icon(PurpleAccount *account, PurpleBuddy *buddy) {
 }
 
 void login(PurpleAccount *account) {
-	
+	purple_debug_info("carrier", "Logged in\n");
 }
 
 void close(PurpleConnection *pc) {
+	purple_debug_info("carrier", "Closed\n");
+}
 
+void add_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group) {
+	purple_debug_info("carrier", "Adding buddy");
+}
+
+void remove_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group) {
+	purple_debug_info("carrier", "Removing buddy");
 }
 
 int chat_send(PurpleConnection *pc, int id, const char *message, PurpleMessageFlags flags) {
