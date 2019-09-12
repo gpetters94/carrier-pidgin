@@ -31,6 +31,7 @@ void close(PurpleConnection *pc);
 int chat_send(PurpleConnection *pc, int id, const char *message, PurpleMessageFlags flags);
 void add_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group);
 void remove_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group);
+GList *status_types(PurpleAccount *account);
 
 static PurplePluginProtocolInfo proto_info = {
 	(PurpleProtocolOptions) (OPT_PROTO_CHAT_TOPIC),// options
@@ -41,7 +42,7 @@ static PurplePluginProtocolInfo proto_info = {
 	NULL, //steamworks_list_emblem,   // list_emblem
   NULL, //steamworks_status_text,   // status_text
 	NULL, //steamworks_tooltip_text,  // tooltip_text
-	NULL, //steamworks_status_types,  // status_types
+	status_types, 						// status_types
 	NULL,                     // blist_node_menu
 	NULL, //steamworks_chat_info,     // chat_info
 	NULL, //steamworks_chat_defaults, // chat_info_defaults
@@ -171,6 +172,8 @@ const gchar *list_icon(PurpleAccount *account, PurpleBuddy *buddy) {
 
 void login(PurpleAccount *account) {
 	purple_debug_info("carrier", "Logged in\n");
+
+	const char *did = purple_account_get_string(account, "did", "");
 }
 
 void close(PurpleConnection *pc) {
@@ -178,16 +181,29 @@ void close(PurpleConnection *pc) {
 }
 
 void add_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group) {
-	purple_debug_info("carrier", "Adding buddy");
+	purple_debug_info("carrier", "Adding buddy\n");
 }
 
 void remove_buddy(PurpleConnection *pc, PurpleBuddy *buddy, PurpleGroup *group) {
-	purple_debug_info("carrier", "Removing buddy");
+	purple_debug_info("carrier", "Removing buddy\n");
 }
 
 int chat_send(PurpleConnection *pc, int id, const char *message, PurpleMessageFlags flags) {
 	// TODO: properly send a message
 	return 0;
+}
+
+GList *status_types(PurpleAccount *account) {
+	GList *status = NULL;
+	PurpleStatusType *type;
+
+	type = purple_status_type_new(PURPLE_STATUS_OFFLINE, "Offline", NULL, TRUE);
+	status = g_list_prepend(status, type);
+
+	type = purple_status_type_new(PURPLE_STATUS_AVAILABLE, "Online", NULL, TRUE);
+	status = g_list_prepend(status, type);
+
+	return status;
 }
 
 PURPLE_INIT_PLUGIN(carrier_twilio, init_plugin, info)
