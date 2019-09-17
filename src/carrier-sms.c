@@ -20,6 +20,7 @@
 #include "libpurple/debug.h"
 #include "libpurple/accountopt.h"
 
+#include "carrier.h"
 #include "twilio.h"
 
 static gboolean load(PurplePlugin *plugin);
@@ -173,7 +174,12 @@ const gchar *list_icon(PurpleAccount *account, PurpleBuddy *buddy) {
 void login(PurpleAccount *account) {
 	purple_debug_info("carrier", "Logged in\n");
 
-	const char *did = purple_account_get_string(account, "did", "");
+	const char *did = purple_account_get_string(account, "did", "N/A");
+	const char *server = purple_account_get_string(account, "server", "N/A");
+
+	char *info = g_strdup_printf("DID:%s, Server:%s\n", did, server);
+	purple_debug_info("carrier", info);
+	g_free(info);
 }
 
 void close(PurpleConnection *pc) {

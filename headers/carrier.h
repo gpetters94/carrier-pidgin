@@ -1,0 +1,7 @@
+#ifndef CARRIER_MAIN
+#define CARRIER_MAIN
+
+#define CARRIER_SERVER_TWILIO 1
+#define CARRIER_SERVER_VOIPMS 2
+
+#endif
